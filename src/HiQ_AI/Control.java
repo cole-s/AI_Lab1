@@ -6,28 +6,31 @@ public class Control {
     private static BoardState root;
     private static boolean win = false;
     private final static int MAX_GEN = 31;
+    private final static char PEG = 'P';
+    private final static char EMPTY = 'E';
+    private final static char BLANK = 'B';
 
-    private static char defaultboard[][] = {
-            {'B', 'B', 'P', 'P', 'P', 'B', 'B'},
-            {'B', 'B', 'P', 'P', 'P', 'B', 'B'},
-            {'P', 'P', 'P', 'P', 'P', 'P', 'P'},
-            {'P', 'P', 'P', 'E', 'P', 'P', 'P'},
-            {'P', 'P', 'P', 'P', 'P', 'P', 'P'},
-            {'B', 'B', 'P', 'P', 'P', 'B', 'B'},
-            {'B', 'B', 'P', 'P', 'P', 'B', 'B'}
+    private static char[][] defaultboard = {
+            {BLANK, BLANK, PEG, PEG, PEG, BLANK, BLANK},
+            {BLANK, BLANK, PEG, PEG, PEG, BLANK, BLANK},
+            {PEG, PEG, PEG, PEG, PEG, PEG, PEG},
+            {PEG, PEG, PEG, EMPTY, PEG, PEG, PEG},
+            {PEG, PEG, PEG, PEG, PEG, PEG, PEG},
+            {BLANK, BLANK, PEG, PEG, PEG, BLANK, BLANK},
+            {BLANK, BLANK, PEG, PEG, PEG, BLANK, BLANK}
     };
 
-    private static char winBoard[][] = {
-            {'B', 'B', 'E', 'E', 'E', 'B', 'B'},
-            {'B', 'B', 'E', 'E', 'E', 'B', 'B'},
-            {'E', 'E', 'E', 'E', 'E', 'E', 'E'},
-            {'E', 'E', 'E', 'P', 'E', 'E', 'E'},
-            {'E', 'E', 'E', 'E', 'E', 'E', 'E'},
-            {'B', 'B', 'E', 'E', 'E', 'B', 'B'},
-            {'B', 'B', 'E', 'E', 'E', 'B', 'B'}
+    private static char[][] winBoard = {
+            {BLANK, BLANK, EMPTY, EMPTY, EMPTY, BLANK, BLANK},
+            {BLANK, BLANK, EMPTY, EMPTY, EMPTY, BLANK, BLANK},
+            {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY},
+            {EMPTY, EMPTY, EMPTY, PEG, EMPTY, EMPTY, EMPTY},
+            {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY},
+            {BLANK, BLANK, EMPTY, EMPTY, EMPTY, BLANK, BLANK},
+            {BLANK, BLANK, EMPTY, EMPTY, EMPTY, BLANK, BLANK}
     };
 
-    private static int pointBoard[][] = {
+    private static int[][] pointBoard = {
             {0, 0, 0, 0, 0, 0, 0},
             {0, 0, 1, 1, 1, 0, 0},
             {0, 1, 2, 2, 2, 1, 0},
@@ -40,9 +43,9 @@ public class Control {
     public static void startGame(){
         Control.root = new BoardState(defaultboard, 0);
         checkMoves(root);
-    }
+    } // end of startGame method
 
-    public static boolean checkMoves(BoardState currentboard){
+    private static boolean checkMoves(BoardState currentboard){
         // base case
         if(currentboard.getGeneration() == MAX_GEN && checkWinCondition(currentboard)){
             printCurrentBoard(currentboard);
@@ -51,7 +54,7 @@ public class Control {
 
         for(int xcoor = 0; xcoor < currentboard.getBoard().length; xcoor++){
             for(int ycoor = 0; ycoor < currentboard.getBoard()[xcoor].length; ycoor++){
-                if(currentboard.getBoard()[xcoor][ycoor] == 'E'){
+                if(currentboard.getBoard()[xcoor][ycoor] == EMPTY){
                     checkUp(currentboard, xcoor, ycoor);
                     checkLeft(currentboard, xcoor, ycoor);
                     checkDown(currentboard, xcoor, ycoor);
@@ -73,28 +76,45 @@ public class Control {
         return false; // path is a dead end
     }
 
-    private static boolean checkUp(BoardState board, int xcord, int ycord){
-        if(board.getBoard()[xcord][ycord+1] == 'P' && board.getBoard()[xcord][ycord+2] == 'P'){
+    private static void checkUp(BoardState board, int xcord, int ycord){
+        if(board.getBoard()[xcord][ycord+1] == PEG && board.getBoard()[xcord][ycord+2] == PEG){
             Config temp = new Config(xcord, ycord+2, xcord, ycord+1, xcord, ycord);
             temp.setValue(getValueOfState(board, temp));
-        }
-        return true;
-    }
+            board.getMoves().add(temp);
+        } // end of if statement
 
-    private static boolean checkLeft(BoardState board, int xcord, int ycord){
+        return;
+    } // end of checkUp method
 
-        return true;
-    }
+    private static void checkLeft(BoardState board, int xcord, int ycord){
+        if(board.getBoard()[xcord-1][ycord] == PEG && board.getBoard()[xcord-2][ycord] == PEG){
+            Config temp = new Config(xcord-2, ycord, xcord-1, ycord, xcord, ycord);
+            temp.setValue(getValueOfState(board, temp));
+            board.getMoves().add(temp);
+        } // end of if statement
+        
+        return;
+    } // end of checkLeft method
 
-    private static boolean checkDown(BoardState board, int xcord, int ycord){
+    private static void checkDown(BoardState board, int xcord, int ycord){
+        if(board.getBoard()[xcord][ycord-1] == PEG && board.getBoard()[xcord][ycord-2] == PEG){
+            Config temp = new Config(xcord, ycord-2, xcord, ycord-1, xcord, ycord);
+            temp.setValue(getValueOfState(board, temp));
+            board.getMoves().add(temp);
+        } // end of if statement
 
-        return true;
-    }
+        return;
+    } // end of checkDown method
 
-    private static boolean checkRight(BoardState board, int xcord, int ycord){
+    private static void checkRight(BoardState board, int xcord, int ycord){
+        if(board.getBoard()[xcord+1][ycord] == PEG && board.getBoard()[xcord+2][ycord] == PEG){
+            Config temp = new Config(xcord+2, ycord, xcord+1, ycord, xcord, ycord);
+            temp.setValue(getValueOfState(board, temp));
+            board.getMoves().add(temp);
+        } // end of if statement
 
-        return true;
-    }
+        return;
+    } // end of checkRight method
 
     private static int getValueOfState(BoardState board, Config move){
         int value = 0;
@@ -116,11 +136,12 @@ public class Control {
             for(int ycoor = 0; ycoor < board.getBoard()[xcoor].length; ycoor++){
                 if(board.getBoard()[xcoor][ycoor] != winBoard[xcoor][ycoor])
                     return false;
-            }
-        }
+                // end of if statement
+            } // end of for loop
+        } // end of for loop
         Control.win = true;
         return true;
-    }
+    } // end of checkWinCondition method
 
     private static void printCurrentBoard(BoardState board){
         for(int xcoor = 0; xcoor < board.getBoard().length; xcoor++){
@@ -130,13 +151,40 @@ public class Control {
             System.out.println();
         }
         System.out.println();
-    }
+    } // end of printCurrentBoard method
 
     private static void sortMoves(BoardState currentboard){
+        boolean sorted = false;
 
-    }
+        // bubble sort
+        do{
+            sorted = true;
+            for(int index = 0; index < currentboard.getMoves().size()-1; index++){
+                if(currentboard.getMoves().get(index).getValue() < currentboard.getMoves().get(index+1).getValue()){
+                    Config temp = new Config(currentboard.getMoves().get(index));
+                    currentboard.getMoves().set(index, currentboard.getMoves().get(index+1));
+                    currentboard.getMoves().set(index+1, temp);
+                    sorted = false;
+                } // end of if statement
+            } // end of for loop
+        } while(!sorted); // end of bubble sort
+
+    } // end of sortMoves method
 
     private static void  nextGeneration(BoardState currentboard){
+        BoardState next = new BoardState(currentboard.getBoard(), currentboard.getGeneration()+1);
+        int fromx = currentboard.getMoves().get(0).getFromX();
+        int fromy = currentboard.getMoves().get(0).getFromY();
+        int removx = currentboard.getMoves().get(0).getRemovX();
+        int removy = currentboard.getMoves().get(0).getRemovY();
+        int tox = currentboard.getMoves().get(0).getToX();
+        int toy = currentboard.getMoves().get(0).getToY();
 
-    }
-}
+        next.getBoard()[fromx][fromy] = EMPTY;
+        next.getBoard()[removx][removy] = EMPTY;
+        next.getBoard()[tox][toy] = PEG;
+
+        currentboard.setNextState(next);
+        currentboard.getMoves().remove(0);
+    } // end of nextGeneration method
+} // end of Control class

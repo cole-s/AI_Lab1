@@ -18,6 +18,16 @@ public class Config {
         this.toy = toy;
     }
 
+    public Config(Config copy){
+        this.fromx = copy.getFromX();
+        this.fromy = copy.getFromX();
+        this.removx = copy.getRemovX();
+        this.removy = copy.getRemovY();
+        this.tox = copy.getToX();
+        this.toy = copy.getToY();
+        this.value = copy.getValue();
+    }
+
     public int getFromX() { return fromx; }
     public void setFromX(int fromx) { this.fromx = fromx; }
 
