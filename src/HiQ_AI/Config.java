@@ -9,14 +9,13 @@ public class Config {
     private int toy;
     private int value;
 
-    public Config(int fromx, int fromy, int removx, int removy, int tox, int toy, int value){
+    public Config(int fromx, int fromy, int removx, int removy, int tox, int toy){
         this.fromx = fromx;
         this.fromy = fromy;
         this.removx = removx;
         this.removy = removy;
         this.tox = tox;
         this.toy = toy;
-        this.value = value;
     }
 
     public int getFromX() { return fromx; }

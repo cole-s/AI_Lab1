@@ -42,11 +42,12 @@ public class Control {
         checkMoves(root);
     }
 
-    public static void checkMoves(BoardState currentboard){
+    public static boolean checkMoves(BoardState currentboard){
+        // base case
         if(currentboard.getGeneration() == MAX_GEN && checkWinCondition(currentboard)){
             printCurrentBoard(currentboard);
-            return;
-        }
+            return true;
+        } // end of if statement
 
         for(int xcoor = 0; xcoor < currentboard.getBoard().length; xcoor++){
             for(int ycoor = 0; ycoor < currentboard.getBoard()[xcoor].length; ycoor++){
@@ -55,29 +56,57 @@ public class Control {
                     checkLeft(currentboard, xcoor, ycoor);
                     checkDown(currentboard, xcoor, ycoor);
                     checkRight(currentboard, xcoor, ycoor);
-                }
-            }
-        }
+                } // end of if statement
+            } // end of for loop
+        } // end of for loop
+
+        sortMoves(currentboard);
+
+        while(!currentboard.getMoves().isEmpty()){
+            nextGeneration(currentboard);
+            if(checkMoves(currentboard.getNextState())){
+                printCurrentBoard(currentboard);
+                return true;
+            } // end of if statement
+        } // end of while loop
+
+        return false; // path is a dead end
     }
 
     private static boolean checkUp(BoardState board, int xcord, int ycord){
+        if(board.getBoard()[xcord][ycord+1] == 'P' && board.getBoard()[xcord][ycord+2] == 'P'){
+            Config temp = new Config(xcord, ycord+2, xcord, ycord+1, xcord, ycord);
+            temp.setValue(getValueOfState(board, temp));
+        }
         return true;
     }
 
     private static boolean checkLeft(BoardState board, int xcord, int ycord){
+
         return true;
     }
 
     private static boolean checkDown(BoardState board, int xcord, int ycord){
+
         return true;
     }
 
     private static boolean checkRight(BoardState board, int xcord, int ycord){
+
         return true;
     }
 
-    private static int getValueOfState(){
+    private static int getValueOfState(BoardState board, Config move){
         int value = 0;
+        for(int xcord = 0; xcord < pointBoard.length; xcord++){
+            for(int ycord = 0; ycord < pointBoard[xcord].length; ycord++){
+                value += pointBoard[xcord][ycord];
+            } // end of for loop
+        } // end of for loop
+
+        value -= pointBoard[move.getFromX()][move.getFromY()];
+        value -= pointBoard[move.getRemovX()][move.getRemovY()];
+        value += pointBoard[move.getToX()][move.getToY()];
 
         return value;
     }
@@ -101,5 +130,13 @@ public class Control {
             System.out.println();
         }
         System.out.println();
+    }
+
+    private static void sortMoves(BoardState currentboard){
+
+    }
+
+    private static void  nextGeneration(BoardState currentboard){
+
     }
 }
