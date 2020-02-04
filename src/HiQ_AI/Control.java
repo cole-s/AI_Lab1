@@ -1,6 +1,8 @@
 package HiQ_AI;
 
 import java.util.*;
+import java.lang.StackOverflowError;
+import java.lang.Error;
 
 public class Control {
     private static BoardState root;
@@ -9,6 +11,7 @@ public class Control {
     private final static char PEG = 'P';
     private final static char EMPTY = 'E';
     private final static char BLANK = 'B';
+    private final static int SIZE = 7;
 
     private static char[][] defaultboard = {
             {BLANK, BLANK, PEG, PEG, PEG, BLANK, BLANK},
@@ -31,13 +34,13 @@ public class Control {
     };
 
     private static int[][] pointBoard = {
-            {0, 0, 0, 0, 0, 0, 0},
             {0, 0, 1, 1, 1, 0, 0},
-            {0, 1, 2, 2, 2, 1, 0},
-            {0, 1, 2, 3, 2, 1, 0},
-            {0, 1, 2, 2, 2, 1, 0},
-            {0, 0, 1, 1, 1, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0}
+            {0, 0, 3, 3, 3, 0, 0},
+            {1, 3, 5, 5, 5, 3, 1},
+            {1, 3, 5, 7, 5, 3, 1},
+            {1, 3, 5, 5, 5, 3, 1},
+            {0, 0, 3, 3, 3, 0, 0},
+            {0, 0, 1, 1, 1, 0, 0}
     };
 
     public static void startGame(){
@@ -46,71 +49,88 @@ public class Control {
     } // end of startGame method
 
     private static boolean checkMoves(BoardState currentboard){
-        // base case
-        if(currentboard.getGeneration() == MAX_GEN && checkWinCondition(currentboard)){
-            printCurrentBoard(currentboard);
-            return true;
-        } // end of if statement
-
-        for(int xcoor = 0; xcoor < currentboard.getBoard().length; xcoor++){
-            for(int ycoor = 0; ycoor < currentboard.getBoard()[xcoor].length; ycoor++){
-                if(currentboard.getBoard()[xcoor][ycoor] == EMPTY){
-                    checkUp(currentboard, xcoor, ycoor);
-                    checkLeft(currentboard, xcoor, ycoor);
-                    checkDown(currentboard, xcoor, ycoor);
-                    checkRight(currentboard, xcoor, ycoor);
-                } // end of if statement
-            } // end of for loop
-        } // end of for loop
-
-        sortMoves(currentboard);
-
-        while(!currentboard.getMoves().isEmpty()){
-            nextGeneration(currentboard);
-            if(checkMoves(currentboard.getNextState())){
+        try {
+            // base case
+            if (currentboard.getGeneration() == MAX_GEN && checkWinCondition(currentboard)) {
                 printCurrentBoard(currentboard);
                 return true;
-            } // end of if statement
-        } // end of while loop
+            } else if (currentboard.getGeneration() == MAX_GEN) {
+                return false;
+            }
 
+            for (int xcoor = 0; xcoor < currentboard.getBoard().length; xcoor++) {
+                for (int ycoor = 0; ycoor < currentboard.getBoard()[xcoor].length; ycoor++) {
+                    if (currentboard.getBoard()[xcoor][ycoor] == EMPTY) {
+                        checkUp(currentboard, xcoor, ycoor);
+                        checkLeft(currentboard, xcoor, ycoor);
+                        checkDown(currentboard, xcoor, ycoor);
+                        checkRight(currentboard, xcoor, ycoor);
+                    } // end of if statement
+                } // end of for loop
+            } // end of for loop
+
+            sortMoves(currentboard);
+
+            while (!currentboard.getMoves().isEmpty()) {
+                nextGeneration(currentboard);
+                if (checkMoves(currentboard.getNextState())) {
+                    printCurrentBoard(currentboard);
+                    return true;
+                } // end of if statement
+            } // end of while loop
+        } catch(StackOverflowError err){
+            System.out.println("Fail");
+            printCurrentBoard(currentboard);
+            System.out.println("Generation: " + currentboard.getGeneration());
+            throw new Error("Something went Wrong");
+        } catch(Error err){
+            return false;
+        }
         return false; // path is a dead end
     }
 
     private static void checkUp(BoardState board, int xcord, int ycord){
-        if(board.getBoard()[xcord][ycord+1] == PEG && board.getBoard()[xcord][ycord+2] == PEG){
-            Config temp = new Config(xcord, ycord+2, xcord, ycord+1, xcord, ycord);
-            temp.setValue(getValueOfState(board, temp));
-            board.getMoves().add(temp);
+        if((ycord+2 < board.getBoard()[xcord].length) && (ycord+1 < board.getBoard().length)) {
+            if (board.getBoard()[xcord][ycord + 1] == PEG && board.getBoard()[xcord][ycord + 2] == PEG) {
+                Config temp = new Config(xcord, ycord + 2, xcord, ycord + 1, xcord, ycord);
+                temp.setValue(getValueOfState(board, temp));
+                board.getMoves().add(temp);
+            } // end of if statement
         } // end of if statement
-
         return;
     } // end of checkUp method
 
     private static void checkLeft(BoardState board, int xcord, int ycord){
-        if(board.getBoard()[xcord-1][ycord] == PEG && board.getBoard()[xcord-2][ycord] == PEG){
-            Config temp = new Config(xcord-2, ycord, xcord-1, ycord, xcord, ycord);
-            temp.setValue(getValueOfState(board, temp));
-            board.getMoves().add(temp);
+        if((xcord-2 >= 0) && (xcord-1 >= 0)) {
+            if (board.getBoard()[xcord - 1][ycord] == PEG && board.getBoard()[xcord - 2][ycord] == PEG) {
+                Config temp = new Config(xcord - 2, ycord, xcord - 1, ycord, xcord, ycord);
+                temp.setValue(getValueOfState(board, temp));
+                board.getMoves().add(temp);
+            } // end of if statement
         } // end of if statement
         
         return;
     } // end of checkLeft method
 
     private static void checkDown(BoardState board, int xcord, int ycord){
-        if(board.getBoard()[xcord][ycord-1] == PEG && board.getBoard()[xcord][ycord-2] == PEG){
-            Config temp = new Config(xcord, ycord-2, xcord, ycord-1, xcord, ycord);
-            temp.setValue(getValueOfState(board, temp));
-            board.getMoves().add(temp);
+        if((ycord-2 >= 0) && (ycord-1 >= 0)) {
+            if (board.getBoard()[xcord][ycord - 1] == PEG && board.getBoard()[xcord][ycord - 2] == PEG) {
+                Config temp = new Config(xcord, ycord - 2, xcord, ycord - 1, xcord, ycord);
+                temp.setValue(getValueOfState(board, temp));
+                board.getMoves().add(temp);
+            } // end of if statement
         } // end of if statement
 
         return;
     } // end of checkDown method
 
     private static void checkRight(BoardState board, int xcord, int ycord){
-        if(board.getBoard()[xcord+1][ycord] == PEG && board.getBoard()[xcord+2][ycord] == PEG){
-            Config temp = new Config(xcord+2, ycord, xcord+1, ycord, xcord, ycord);
-            temp.setValue(getValueOfState(board, temp));
-            board.getMoves().add(temp);
+        if((xcord+2 < board.getBoard().length) && (xcord+1 < board.getBoard().length)) {
+            if (board.getBoard()[xcord + 1][ycord] == PEG && board.getBoard()[xcord + 2][ycord] == PEG) {
+                Config temp = new Config(xcord + 2, ycord, xcord + 1, ycord, xcord, ycord);
+                temp.setValue(getValueOfState(board, temp));
+                board.getMoves().add(temp);
+            } // end of if statement
         } // end of if statement
 
         return;
@@ -172,19 +192,25 @@ public class Control {
     } // end of sortMoves method
 
     private static void  nextGeneration(BoardState currentboard){
-        BoardState next = new BoardState(currentboard.getBoard(), currentboard.getGeneration()+1);
-        int fromx = currentboard.getMoves().get(0).getFromX();
-        int fromy = currentboard.getMoves().get(0).getFromY();
-        int removx = currentboard.getMoves().get(0).getRemovX();
-        int removy = currentboard.getMoves().get(0).getRemovY();
-        int tox = currentboard.getMoves().get(0).getToX();
-        int toy = currentboard.getMoves().get(0).getToY();
+        if(!currentboard.getMoves().isEmpty()) {
+            BoardState next = new BoardState(currentboard.getBoard(), currentboard.getGeneration() + 1);
+            int fromx = currentboard.getMoves().get(0).getFromX();
+            int fromy = currentboard.getMoves().get(0).getFromY();
+            int removx = currentboard.getMoves().get(0).getRemovX();
+            int removy = currentboard.getMoves().get(0).getRemovY();
+            int tox = currentboard.getMoves().get(0).getToX();
+            int toy = currentboard.getMoves().get(0).getToY();
 
-        next.getBoard()[fromx][fromy] = EMPTY;
-        next.getBoard()[removx][removy] = EMPTY;
-        next.getBoard()[tox][toy] = PEG;
+            next.getBoard()[fromx][fromy] = EMPTY;
+            next.getBoard()[removx][removy] = EMPTY;
+            next.getBoard()[tox][toy] = PEG;
 
-        currentboard.setNextState(next);
-        currentboard.getMoves().remove(0);
+            currentboard.setNextState(next);
+            currentboard.getMoves().remove(0);
+//            System.out.println("Current Board: " + currentboard.getGeneration());
+//            printCurrentBoard(currentboard);
+//            System.out.println("Next Gen: " + currentboard.getNextState().getGeneration());
+//            printCurrentBoard(currentboard.getNextState());
+        }
     } // end of nextGeneration method
 } // end of Control class

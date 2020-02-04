@@ -8,9 +8,9 @@ import java.util.ArrayList;
  */
 
 public class BoardState {
-    
+    private final int SIZE = 7;
     private BoardState nextstate;
-    private char board[][];
+    private char board[][] = new char[SIZE][SIZE];
     private int value = 0;
     private int generation = 0;
     private ArrayList<Config> moves = new ArrayList<Config>();
