@@ -14,6 +14,7 @@ public class BoardState {
     private int value = 0;
     private int generation = 0;
     private ArrayList<Config> moves = new ArrayList<Config>();
+    public int peg_num;
 
     public BoardState(char board[][], int generation){
         copyBoard(board);
@@ -34,27 +35,12 @@ public class BoardState {
         int xindex = 0;
         int yindex = 0;
         
-        for(xindex = 0; xindex < board.length; xindex++){
-            for(yindex = 0; yindex < board[xindex].length; yindex++){
+        for(yindex = SIZE-1; yindex >= 0; yindex--){
+            for(xindex = 0; xindex <SIZE; xindex++){
                 this.board[xindex][yindex] = board[xindex][yindex];
             }
         }
         
         return true;
     }
-
-    public int getValue(int pointboard[][]){
-        for(int xindex = 0; xindex < pointboard.length; xindex++){
-            for(int yindex = 0; yindex < pointboard[0].length; yindex++){
-                if (board[xindex][yindex] == 'P'){
-                    this.value += pointboard[xindex][yindex];
-                }
-            }
-        }
-
-        return this.value;
-    }
-
-
-
 }
