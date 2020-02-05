@@ -4,15 +4,23 @@ import java.util.*;
 import java.lang.StackOverflowError;
 import java.lang.Error;
 
+/**
+ * @author Cole Schaar
+ * CS-481 Artificial Intelligence
+ *
+ * Class: Control
+ *
+ * Class filled with static methods to act as a controller/brain for the entire program. Handles all other classes
+ */
 public class Control {
-    private static BoardState root;
-    private static boolean win = false;
-    private final static int MAX_GEN = 31;
-    private final static char PEG = 'P';
+    private static BoardState root; // root of the tree/list
+    private final static int MAX_GEN = 31; // max number of moves
+    private final static char PEG = 'P'; // characters used when printing out board
     private final static char EMPTY = 'E';
-    private final static char BLANK = 'B';
-    private final static int SIZE = 7;
+    private final static char BLANK = ' ';
+    private final static int SIZE = 7; // size of the sides of the 2D array
 
+    // Conditions for Start, End, and Points while moving through the tree
     private static char[][] defaultboard = {
             {BLANK, BLANK, PEG, PEG, PEG, BLANK, BLANK},
             {BLANK, BLANK, PEG, PEG, PEG, BLANK, BLANK},
@@ -43,15 +51,28 @@ public class Control {
             {0, 0, 1, 1, 1, 0, 0}
     };
 
+    /**
+     * Method: startGame
+     *
+     * creates base conditions for the program
+     */
     public static void startGame(){
         Control.root = new BoardState(defaultboard, 0);
         root.peg_num = 32;
         checkMoves(root);
     } // end of startGame method
 
+    /**
+     * Method: checkMoves
+     * @param currentboard
+     * @return true - solution was found
+     * @return false - solution was not found
+     *
+     * Recursive function that checks the available moves the program can take
+     */
     private static boolean checkMoves(BoardState currentboard){
         try {
-            // base case
+            // base case(s)
             if ((currentboard.getGeneration() == MAX_GEN || currentboard.peg_num == 1) && checkWinCondition(currentboard)) {
                 printCurrentBoard(currentboard);
                 return true;
@@ -59,15 +80,13 @@ public class Control {
                 System.out.println("Generation: " + currentboard.getGeneration());
                 printCurrentBoard(currentboard);
                 return false;
-            }
+            } // end of if-else statements
 
-            if(currentboard.getGeneration() == MAX_GEN) {
-                System.out.println("GEN: " + currentboard.getGeneration() + " + PEGNUM: " + currentboard.peg_num + " = " + (currentboard.getGeneration() + currentboard.peg_num));
-            }
+            // check each square of the board for valid moves
             for (int xcoor = 0; xcoor < currentboard.getBoard().length; xcoor++) {
                 for (int ycoor = 0; ycoor < currentboard.getBoard()[xcoor].length; ycoor++) {
                     if (currentboard.getBoard()[xcoor][ycoor] == EMPTY) {
-                        checkUp(currentboard, xcoor, ycoor);
+                        checkUp(currentboard, xcoor, ycoor); // checks each direction from an EMPTY tile
                         checkLeft(currentboard, xcoor, ycoor);
                         checkDown(currentboard, xcoor, ycoor);
                         checkRight(currentboard, xcoor, ycoor);
@@ -75,37 +94,47 @@ public class Control {
                 } // end of for loop
             } // end of for loop
 
-            sortMoves(currentboard);
-            boolean unnecessary = false;
+            sortMoves(currentboard); // sorts the list of moves available to the program based on value
+            boolean unnecessary = false; // to ensure no unnecessary paths are taken
+
+            // while there are still moves/branches to explore
             while (!currentboard.getMoves().isEmpty() && !unnecessary) {
-                nextGeneration(currentboard);
-                if (checkMoves(currentboard.getNextState())) {
+                nextGeneration(currentboard); // ready next branch
+                if (checkMoves(currentboard.getNextState())) { // recursive call back
                     printCurrentBoard(currentboard);
-                    return true;
-                } else if(currentboard.getGeneration() == 0){
+                    return true; // solution was found
+                }  // end of if statement
+                if(currentboard.getGeneration() == 0){ // did we return to the root function
                     unnecessary = true;
-                }
+                } // end of if statement
             } // end of while loop
-        } catch(StackOverflowError err){
+        } catch(StackOverflowError err){ // in-case there is a stack overflow error
+            // print info of current failed state to figure out issue
             System.out.println("Fail");
             printCurrentBoard(currentboard);
             System.out.println("Generation: " + currentboard.getGeneration());
             throw new Error("Something went Wrong");
-        } catch(Error err){
+        } catch(Error err){ // to ensure no multiple prints of what went wrong
             return false;
-        }
+        } // end of try-catch statements
         return false; // path is a dead end
-    }
+    } // end of checkMoves method
 
+    /**
+     * Method(s): check___
+     * @param board - current board being used to find legal moves
+     * @param xcord - x coordinate on board
+     * @param ycord - y coordinate on board
+     *
+     * these check methods check each position given to them in the form of x and y cordinates to find moves available
+     * to the program.
+     */
     private static void checkUp(BoardState board, int xcord, int ycord){
-//        if(ycord+2 == 2 && xcord == 2){
-//            System.out.println("Ham");
-//        }
+
         if((ycord+2 < board.getBoard()[xcord].length) && (ycord+1 < board.getBoard().length)) {
             if (board.getBoard()[xcord][ycord + 1] == PEG && board.getBoard()[xcord][ycord + 2] == PEG) {
                 Config temp = new Config(xcord, ycord + 2, xcord, ycord + 1, xcord, ycord);
                 temp.setValue(getValueOfState(board, temp));
-                temp.dir = 'U';
                 board.getMoves().add(temp);
             } // end of if statement
         } // end of if statement
@@ -113,14 +142,11 @@ public class Control {
     } // end of checkUp method
 
     private static void checkLeft(BoardState board, int xcord, int ycord){
-//        if(ycord == 2 && xcord-2 == 2){
-//            System.out.println("Bacon");
-//        }
+
         if((xcord-2 >= 0) && (xcord-1 >= 0)) {
             if (board.getBoard()[xcord - 1][ycord] == PEG && board.getBoard()[xcord - 2][ycord] == PEG) {
                 Config temp = new Config(xcord - 2, ycord, xcord - 1, ycord, xcord, ycord);
                 temp.setValue(getValueOfState(board, temp));
-                temp.dir = 'L';
                 board.getMoves().add(temp);
             } // end of if statement
         } // end of if statement
@@ -129,9 +155,7 @@ public class Control {
     } // end of checkLeft method
 
     private static void checkDown(BoardState board, int xcord, int ycord){
-//        if(ycord-2 == 2 && xcord == 2){
-//            System.out.println("Salami");
-//        }
+
         if((ycord-2 >= 0) && (ycord-1 >= 0)) {
             if (board.getBoard()[xcord][ycord - 1] == PEG && board.getBoard()[xcord][ycord - 2] == PEG) {
                 Config temp = new Config(xcord, ycord - 2, xcord, ycord - 1, xcord, ycord);
@@ -145,9 +169,7 @@ public class Control {
     } // end of checkDown method
 
     private static void checkRight(BoardState board, int xcord, int ycord){
-//        if(ycord == 2 && xcord+2 == 2){
-//            System.out.println("Pork");
-//        }
+
         if((xcord+2 < board.getBoard().length) && (xcord+1 < board.getBoard().length)) {
             if (board.getBoard()[xcord + 1][ycord] == PEG && board.getBoard()[xcord + 2][ycord] == PEG) {
                 Config temp = new Config(xcord + 2, ycord, xcord + 1, ycord, xcord, ycord);
@@ -160,23 +182,42 @@ public class Control {
         return;
     } // end of checkRight method
 
+// END OF CHECK DIRECTION METHODS=======================================================================================
+
+    /**
+     * Method: getValueOfState
+     * @param board - board being used to identify value of move
+     * @param move - Config object that contains the information about next branch
+     * @return value of the move that the AI could choose
+     *
+     * Looking at the current board state and using the point based board the value of a move would be calculated here
+     */
     private static int getValueOfState(BoardState board, Config move){
         int value = 0;
         for(int xcord = 0; xcord < pointBoard.length; xcord++){
             for(int ycord = 0; ycord < pointBoard[xcord].length; ycord++){
-                if(board.getBoard()[xcord][ycord] == PEG) {
+                if(board.getBoard()[xcord][ycord] == PEG) { // if a peg is present here
                     value += pointBoard[xcord][ycord];
-                }
+                } // end of if statement
             } // end of for loop
         } // end of for loop
 
+        // changing values based on where the movement takes place
         value -= pointBoard[move.getFromX()][move.getFromY()];
         value -= pointBoard[move.getRemovX()][move.getRemovY()];
         value += pointBoard[move.getToX()][move.getToY()];
 
         return value;
-    }
+    } // end of getValueOfState method
 
+    /**
+     * Method: checkWinCondition
+     * @param board - current board being checked for win conditions to be meet
+     * @return false - board does not meet win condition
+     * @return true - board does meet win condition
+     *
+     * Checks each value of the board to ensure if the program has reached a solution
+     */
     private static boolean checkWinCondition(BoardState board){
         for(int xcoor = 0; xcoor < board.getBoard().length; xcoor++){
             for(int ycoor = 0; ycoor < board.getBoard()[xcoor].length; ycoor++){
@@ -185,22 +226,33 @@ public class Control {
                 // end of if statement
             } // end of for loop
         } // end of for loop
-        Control.win = true;
         return true;
     } // end of checkWinCondition method
 
+    /**
+     * Method: printCurrentBoard
+     * @param board - current board state
+     *
+     * prints current board state to the terminal
+     */
     private static void printCurrentBoard(BoardState board){
         for(int ycoor = SIZE-1; ycoor >= 0; ycoor--){
             for(int xcoor = 0; xcoor < SIZE; xcoor++){
                 System.out.print(board.getBoard()[xcoor][ycoor] + " ");
-            }
+            } // end of for loop
             System.out.println();
-        }
+        } // end of for loop
         System.out.println();
     } // end of printCurrentBoard method
 
+    /**
+     * Method: sortMoves
+     * @param currentboard - current state/node of the search algorithm
+     *
+     * sorts the Config ArrayList by value
+     */
     private static void sortMoves(BoardState currentboard){
-        boolean sorted = false;
+        boolean sorted = false; // flag used to identify if the ArrayList is sorted
 
         // bubble sort
         do{
@@ -217,12 +269,17 @@ public class Control {
 
     } // end of sortMoves method
 
+    /**
+     * Method: nextGeneration
+     * @param currentboard - board to be linked with next move/generation
+     *
+     * takes from the moves ArrayList from the BoardState class object the next branch of the tree is selected and used
+     * to create the next board state in the tree.
+     */
     private static void  nextGeneration(BoardState currentboard){
-//        if(currentboard.getMoves().get(0).getFromY() == 2 && currentboard.getMoves().get(0).getFromX() == 2){
-//            System.out.println("DIR: " + currentboard.getMoves().get(0).dir);
-//        }
 
         if(!currentboard.getMoves().isEmpty()) {
+            // gets needed information for the new board.
             BoardState next = new BoardState(currentboard.getBoard(), currentboard.getGeneration() + 1);
             int fromx = currentboard.getMoves().get(0).getFromX();
             int fromy = currentboard.getMoves().get(0).getFromY();
@@ -231,41 +288,17 @@ public class Control {
             int tox = currentboard.getMoves().get(0).getToX();
             int toy = currentboard.getMoves().get(0).getToY();
 
+            // generates the legal move for the next branch's board state
             next.getBoard()[fromx][fromy] = EMPTY;
             next.getBoard()[removx][removy] = EMPTY;
             next.getBoard()[tox][toy] = PEG;
             next.peg_num = currentboard.peg_num - 1;
 
+            // sets next branch for recursive call
             currentboard.setNextState(next);
-//            System.out.println(next.peg_num + " " + checkPegs(next));
-//
-//            if(next.peg_num != checkPegs(next)){
-//                System.out.println("FROM: " + fromx + ", " + fromy);
-//                System.out.println("REMOVE: " + removx + ", " + removy);
-//                System.out.println("TO: " + tox + ", " + toy);
-//                System.out.println("Direction: " + currentboard.getMoves().get(0).dir);
-//                System.out.println("Current Board: " + currentboard.getGeneration());
-//                printCurrentBoard(currentboard);
-//                System.out.println("Next Board: ");
-//                printCurrentBoard(next);
-//            }
-//            System.out.println("Next Gen: " + currentboard.getNextState().getGeneration());
-//            printCurrentBoard(currentboard.getNextState());
-            currentboard.getMoves().remove(0);
+            currentboard.getMoves().remove(0); // removes already explored move/branch from ArrayList
 
-        }
+        } // end of if statement
     } // end of nextGeneration method
 
-    private static int checkPegs(BoardState board){
-        int pegs = 0;
-        for(int y = 0; y < SIZE; y++){
-            for(int x = 0; x < SIZE; x++){
-                if(board.getBoard()[x][y] == PEG){
-                    pegs++;
-                }
-            }
-        }
-
-        return pegs;
-    }
 } // end of Control class
