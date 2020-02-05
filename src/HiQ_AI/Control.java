@@ -60,6 +60,7 @@ public class Control {
                 printCurrentBoard(currentboard);
                 return false;
             }
+
             if(currentboard.getGeneration() == MAX_GEN) {
                 System.out.println("GEN: " + currentboard.getGeneration() + " + PEGNUM: " + currentboard.peg_num + " = " + (currentboard.getGeneration() + currentboard.peg_num));
             }
@@ -74,7 +75,7 @@ public class Control {
                 } // end of for loop
             } // end of for loop
 
-         //   sortMoves(currentboard);
+            sortMoves(currentboard);
             boolean unnecessary = false;
             while (!currentboard.getMoves().isEmpty() && !unnecessary) {
                 nextGeneration(currentboard);
@@ -217,9 +218,9 @@ public class Control {
     } // end of sortMoves method
 
     private static void  nextGeneration(BoardState currentboard){
- //       if(currentboard.getMoves().get(0).getFromY() == 2 && currentboard.getMoves().get(0).getFromX() == 2){
-            System.out.println("DIR: " + currentboard.getMoves().get(0).dir);
-  //      }
+//        if(currentboard.getMoves().get(0).getFromY() == 2 && currentboard.getMoves().get(0).getFromX() == 2){
+//            System.out.println("DIR: " + currentboard.getMoves().get(0).dir);
+//        }
 
         if(!currentboard.getMoves().isEmpty()) {
             BoardState next = new BoardState(currentboard.getBoard(), currentboard.getGeneration() + 1);
@@ -236,18 +237,35 @@ public class Control {
             next.peg_num = currentboard.peg_num - 1;
 
             currentboard.setNextState(next);
-            if(next.getGeneration() == MAX_GEN) {
-                System.out.println("FROM: " + fromx + ", " + fromy);
-                System.out.println("REMOVE: " + removx + ", " + removy);
-                System.out.println("TO: " + tox + ", " + toy);
-                System.out.println("Direction: " + currentboard.getMoves().get(0).dir);
-                System.out.println("Current Board: " + currentboard.getGeneration());
-                printCurrentBoard(currentboard);
-            }
+//            System.out.println(next.peg_num + " " + checkPegs(next));
+//
+//            if(next.peg_num != checkPegs(next)){
+//                System.out.println("FROM: " + fromx + ", " + fromy);
+//                System.out.println("REMOVE: " + removx + ", " + removy);
+//                System.out.println("TO: " + tox + ", " + toy);
+//                System.out.println("Direction: " + currentboard.getMoves().get(0).dir);
+//                System.out.println("Current Board: " + currentboard.getGeneration());
+//                printCurrentBoard(currentboard);
+//                System.out.println("Next Board: ");
+//                printCurrentBoard(next);
+//            }
 //            System.out.println("Next Gen: " + currentboard.getNextState().getGeneration());
 //            printCurrentBoard(currentboard.getNextState());
             currentboard.getMoves().remove(0);
 
         }
     } // end of nextGeneration method
+
+    private static int checkPegs(BoardState board){
+        int pegs = 0;
+        for(int y = 0; y < SIZE; y++){
+            for(int x = 0; x < SIZE; x++){
+                if(board.getBoard()[x][y] == PEG){
+                    pegs++;
+                }
+            }
+        }
+
+        return pegs;
+    }
 } // end of Control class
