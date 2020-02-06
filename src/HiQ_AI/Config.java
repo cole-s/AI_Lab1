@@ -16,7 +16,6 @@ public class Config {
     private int tox;
     private int toy;
     private int value;
-    public char dir; // debug variable
 
     /**
      * Constructor: Config
@@ -66,4 +65,4 @@ public class Config {
     public int getToY() { return toy; }
     public int getValue() { return value; }
     public void setValue(int value) { this.value = value; } // sets the value variable of the Config object
-}
+} // end of Config Class
