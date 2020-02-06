@@ -18,8 +18,9 @@ public class Lab1_Main {
         } // end of try catch statements
 
         // code here just to print out run time with variables not important to the functionality of the program
-        Control.runtime = Control.endtime - Control.starttime;
+        Control.runtime = Control.endtime - Control.starttime; // this is in nanoseconds
         // prints the time taken for the program to start at the base board state and find the path to the goal state
+        // divided by 1000000000.0 to convert nanoseconds to seconds
         System.out.println("Time taken: " + (Control.runtime/1000000000.0) + " seconds");
     } // end of main method
 } // end of Lab1_Main class
