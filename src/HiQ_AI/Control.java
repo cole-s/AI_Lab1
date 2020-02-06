@@ -20,7 +20,10 @@ public class Control {
     private final static char BLANK = ' ';
     private final static int BOARD_SIZE = 7; // size of the sides of the 2D array
     private final static int STARTING_POINTS = 48; // starting amount of points on the default board
-    private static Hashtable exploredstates; // keeps track of board states already explored to avoid looping
+    private static Hashtable exploredstates = null; // keeps track of board states already explored to avoid looping
+    public static double starttime;
+    public static double endtime;
+    public static double runtime;
 
     // Conditions for Start, End, and Points while moving through the tree
     private static char[][] defaultboard = {
@@ -59,6 +62,7 @@ public class Control {
      * creates base conditions for the program
      */
     public static void startGame(){
+        starttime = System.nanoTime();
         exploredstates = new Hashtable(); // initialize Hashtable object
         Control.root = new BoardState(defaultboard, 0, STARTING_POINTS);
         checkMoves(root);
@@ -68,7 +72,7 @@ public class Control {
      * Method: checkMoves
      * @param currentboard
      * @return true - solution was found
-     * @return false - solution was not found
+     *         false - solution was not found
      *
      * Recursive function that checks the available moves the program can take
      */
@@ -76,6 +80,7 @@ public class Control {
         try {
             // base cases
             if ((currentboard.getGeneration() == MAX_GEN) && checkWinCondition(currentboard)) {
+                endtime = System.nanoTime();
                 printCurrentBoard(currentboard);
                 return true;
             } else if (currentboard.getGeneration() == MAX_GEN) {
