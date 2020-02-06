@@ -20,10 +20,12 @@ public class Control {
     private final static char BLANK = ' ';
     private final static int BOARD_SIZE = 7; // size of the sides of the 2D array
     private final static int STARTING_POINTS = 48; // starting amount of points on the default board
-    private static Hashtable exploredstates = null; // keeps track of board states already explored to avoid looping
-    public static double starttime;
-    public static double endtime;
-    public static double runtime;
+    private static Hashtable exploredstates; // keeps track of board states already explored to avoid looping
+
+    // the following variables are not needed for the functionality of the code, only purpose is to track performance
+    public static double starttime; // keeps track of time when program started in nanoseconds
+    public static double endtime; // keeps track of time when program ends in nanoseconds
+    public static double runtime; // stores the total time taken for the program to run
 
     // Conditions for Start, End, and Points while moving through the tree
     private static char[][] defaultboard = {
