@@ -19,6 +19,7 @@ public class Lab1_Main {
 
         // code here just to print out run time with variables not important to the functionality of the program
         Control.runtime = Control.endtime - Control.starttime;
-        System.out.println("Time taken: " + (Control.runtime/1000000000.0) + " seconds"); // prints result for user
+        // prints the time taken for the program to start at the base board state and find the path to the goal state
+        System.out.println("Time taken: " + (Control.runtime/1000000000.0) + " seconds");
     } // end of main method
 } // end of Lab1_Main class

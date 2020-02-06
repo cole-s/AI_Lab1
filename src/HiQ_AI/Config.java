@@ -15,7 +15,7 @@ public class Config {
     private int removy;
     private int tox;
     private int toy;
-    private int value;
+    private int value; // how close to goal is this move value tracker
 
     /**
      * Constructor: Config

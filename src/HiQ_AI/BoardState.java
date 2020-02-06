@@ -59,8 +59,17 @@ public class BoardState {
         return true;
     } // end of copyBoard method
 
+    /**
+     * Method: toString
+     * @return String of boardstate on a single line
+     *
+     *
+     * converts the current board state into a single line string for the hash table object index
+     *         example: |_P_| turns into "_P__P_"
+     *                  |_P_|
+     */
     public String toString(){
-        String ret = "";
+        String ret = ""; // return value
 
         for(int yindex = SIZE-1; yindex >= 0; yindex--){
             for(int xindex = 0; xindex < SIZE; xindex++){

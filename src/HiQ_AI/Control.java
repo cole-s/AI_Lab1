@@ -309,6 +309,14 @@ public class Control {
         } // end of if statement
     } // end of nextGeneration method
 
+    /**
+     * Method: isExplored
+     * @param board - current board state
+     * @return  true if board state is already in exploredstates table
+     *          false if board state is not in exploredstates table
+     *
+     * Checks to see if current board state has already been explored fully
+     */
     private static boolean isExplored(BoardState board){
         return exploredstates.get(board.toString()) != null;
     } // end of isExplored method
