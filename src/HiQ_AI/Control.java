@@ -155,6 +155,7 @@ public class Control {
                 board.getMoves().add(temp);
             } // end of if statement
         } // end of if statement
+
         return;
     } // end of checkUp method
 
@@ -228,9 +229,9 @@ public class Control {
     private static boolean checkWinCondition(BoardState board){
         for(int xcoor = 0; xcoor < board.getBoard().length; xcoor++){
             for(int ycoor = 0; ycoor < board.getBoard()[xcoor].length; ycoor++){
-                if(board.getBoard()[xcoor][ycoor] != winBoard[xcoor][ycoor])
+                if(board.getBoard()[xcoor][ycoor] != winBoard[xcoor][ycoor]) {
                     return false;
-                // end of if statement
+                } // end of if statement
             } // end of for loop
         } // end of for loop
         return true;
@@ -320,5 +321,4 @@ public class Control {
     private static boolean isExplored(BoardState board){
         return exploredstates.get(board.toString()) != null;
     } // end of isExplored method
-
 } // end of Control class

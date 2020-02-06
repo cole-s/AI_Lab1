@@ -65,4 +65,4 @@ public class Config {
     public int getToY() { return toy; }
     public int getValue() { return value; }
     public void setValue(int value) { this.value = value; } // sets the value variable of the Config object
-}
+} // end of Config Class

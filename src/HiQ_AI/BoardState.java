@@ -12,9 +12,9 @@ import java.util.ArrayList;
  */
 
 public class BoardState {
-    private final int SIZE = 7; // max size of the board 2D array
+    private final int BOARD_SIZE = 7; // max size of the board 2D array
     private BoardState nextstate; // next branch state
-    private char board[][] = new char[SIZE][SIZE]; // peg board
+    private char board[][] = new char[BOARD_SIZE][BOARD_SIZE]; // peg board
     private int generation = 0; // generation number/move counter
     private ArrayList<Config> moves = new ArrayList<Config>(); // list of all possible moves at current state
     private int value;
@@ -50,8 +50,8 @@ public class BoardState {
         int xindex = 0; // x coordinate of board
         int yindex = 0; // y coordinate of board
 
-        for(yindex = SIZE-1; yindex >= 0; yindex--){
-            for(xindex = 0; xindex <SIZE; xindex++){
+        for(yindex = BOARD_SIZE - 1; yindex >= 0; yindex--){
+            for(xindex = 0; xindex < BOARD_SIZE; xindex++){
                 this.board[xindex][yindex] = board[xindex][yindex];
             } // end of for loop
         } // end of for loop
@@ -71,8 +71,8 @@ public class BoardState {
     public String toString(){
         String ret = ""; // return value
 
-        for(int yindex = SIZE-1; yindex >= 0; yindex--){
-            for(int xindex = 0; xindex < SIZE; xindex++){
+        for(int yindex = BOARD_SIZE - 1; yindex >= 0; yindex--){
+            for(int xindex = 0; xindex < BOARD_SIZE; xindex++){
                 ret += board[xindex][yindex];
             } // end of for loop
         } // end of for loop
