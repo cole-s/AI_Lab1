@@ -16,7 +16,6 @@ public class Config {
     private int tox;
     private int toy;
     private int value;
-    public char dir; // debug variable
 
     /**
      * Constructor: Config
